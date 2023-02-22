@@ -54,7 +54,7 @@ class ValueIteration:
                 break
             else:
                 self.old_values = self.values.copy()
-
+##
         return self.values
 
     def get_actions(self, values):
