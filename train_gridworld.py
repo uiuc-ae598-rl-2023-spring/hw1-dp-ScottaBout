@@ -1,7 +1,6 @@
 import numpy as np
-
 import gridworld
-import numpy
+
 
 class PolicyIteration:
     """
@@ -14,14 +13,66 @@ class PolicyIteration:
     def __init__(self, env, gamma):
         self.env = env
         self.gamma = gamma
-        self.values = np.zeros((5, 5))
+        self.values = np.zeros(self.env.num_states)
+        self.old_values = np.ones(self.env.num_states)
+        self.actions = np.zeros(self.env.num_states)
+        self.old_actions = np.ones(self.env.num_states)
 
-    def learn(self, total_timesteps):
+    def evaluate(self, total_timesteps=int(1e5)):
+        for k in range(total_timesteps):
+            for s in range(self.env.num_states):
+                self.env.s = s
+                (s1, r1, _) = self.env.step(self.actions[s])
+                p = self.env.p(s1, s, self.actions[s])
+                re = r1 + self.gamma * self.values[s1]
+                self.values[s] = np.sum(p * re)
+
+            if np.allclose(self.old_values, self.values, rtol=0, atol=1e-20):
+                break
+            else:
+                self.old_values = self.values.copy()
+
+        return self.values
+
+    def improve(self):
+        v_list = np.zeros(self.env.num_actions)
+        actions = np.zeros(self.env.num_states)
+        for s in range(self.env.num_states):
+            for a in range(self.env.num_actions):
+                self.env.s = s
+                (s1, r1, _) = self.env.step(a)
+                p = self.env.p(s1, s, a)
+                v_list[a] = r1 + self.gamma * np.sum(p * self.values[s1])
+            actions[s] = np.argmax(v_list)
+
+        self.actions = actions
+        return actions.astype(int)
+
+    def learn_actions(self):
+        for k in range(1000):
+            self.evaluate()
+            self.improve()
+
+        return self.actions
+
+    def play(self):
+        actions = self.learn_actions().astype(int)
+        # print(f'actions = {actions}')
         s = self.env.reset()
-
-        # rollout
-        for i in range(total_timesteps):
-            pass
+        done = False
+        step = 0
+        while not done:
+            self.env.render()
+            # print(f'state = {s}')
+            a = actions[s]
+            # print(f'action = {a}')
+            (s, r, done) = self.env.step(a)
+            # print(f'next state = {s}')
+            if done:
+                # print(f'step = {step}')
+                s = self.env.reset()
+            else:
+                step += 1
 
 
 class ValueIteration:
@@ -54,7 +105,7 @@ class ValueIteration:
                 break
             else:
                 self.old_values = self.values.copy()
-##
+
         return self.values
 
     def get_actions(self, values):
@@ -63,9 +114,9 @@ class ValueIteration:
         for s in range(self.env.num_states):
             for a in range(self.env.num_actions):
                 self.env.s = s
-                (s1, _, _) = self.env.step(a)
+                (s1, r1, _) = self.env.step(a)
                 p = self.env.p(s1, s, a)
-                v_list[a] = np.sum(p * values[s1])
+                v_list[a] = r1 + self.gamma * np.sum(p * values[s1])
             actions[s] = np.argmax(v_list)
 
         return actions.astype(int)
@@ -75,9 +126,9 @@ class ValueIteration:
         actions = self.get_actions(values)
         # print(f'actions = {actions}')
         s = self.env.reset()
-        DONE = False
+        done = False
         step = 0
-        while not DONE:
+        while not done:
             self.env.render()
             # print(f'state = {s}')
             a = actions[s]
@@ -87,7 +138,6 @@ class ValueIteration:
             if done:
                 # print(f'step = {step}')
                 s = self.env.reset()
-                DONE = done
             else:
                 step += 1
 
@@ -104,7 +154,8 @@ class QLearning:
         pass
 
 
-envs = gridworld.GridWorld()
-gamma = 0.95
-policy = ValueIteration(envs, gamma)
-policy.play()
+if __name__ == '__main__':
+    envs = gridworld.GridWorld()
+    gamma = 0.95
+    policy = PolicyIteration(envs, gamma)
+    policy.play()
