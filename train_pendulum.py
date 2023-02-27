@@ -254,7 +254,7 @@ class TDzero:
 
         return self.rew_plot_list
 
-    def learn(self, alpha, total_timesteps=int(1e3)):
+    def learn(self, alpha, total_timesteps=int(1e2)):
         plot_list = []
         for episode in range(total_timesteps):
             list1 = self.rollout(alpha=alpha)
@@ -272,7 +272,14 @@ class TDzero:
 if __name__ == '__main__':
     envs = discrete_pendulum.Pendulum(n_theta=15, n_thetadot=21)
     gamma = 0.95
-    mode = 0
+    """
+    mode = 0 activates SARSA
+    mode = 1 activates Q-Learning
+    mode = 2 activates TD(0)
+        submode = 0 activates SARSA
+        submode = 1 activates Q-Learning
+    """
+    mode = 2
     submode = 0
     if mode == 0:
         policy = SARSA(envs, gamma)
