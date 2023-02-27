@@ -2,6 +2,10 @@ import numpy as np
 import discrete_pendulum
 import matplotlib.pyplot as plt
 
+"""
+Initial hw1 for Scott Bout (bout2)
+"""
+
 
 class SARSA:
 
