@@ -60,6 +60,9 @@ class PolicyIteration:
             self.improve()
 
         plt.plot(self.values_list_plot)
+        plt.xlabel('iterations')
+        plt.ylabel('values')
+        plt.title('values over time')
         plt.show()
 
         return self.actions
@@ -67,19 +70,37 @@ class PolicyIteration:
     def play(self):
         actions = self.learn_actions().astype(int)
         s = self.env.reset()
+        log = {
+            't': [0],
+            's': [s],
+            'a': [],
+            'r': [],
+        }
         done = False
         step = 0
         while not done:
-            self.env.render()
+            # self.env.render()
             a = actions[s]
             (s, r, done) = self.env.step(a)
+            log['t'].append(log['t'][-1] + 1)
+            log['s'].append(s)
+            log['a'].append(a)
+            log['r'].append(r)
             if done:
                 s = self.env.reset()
             else:
                 step += 1
 
+        plt.plot(log['t'], log['s'])
+        plt.plot(log['t'][:-1], log['a'])
+        plt.plot(log['t'][:-1], log['r'])
+        plt.legend(['s', 'a', 'r'])
+        plt.title('trajectory example')
+        plt.show()
+
     def plot(self):
-        self.learn_actions()
+        # self.learn_actions()
+        self.play()
 
 
 class ValueIteration:
@@ -112,8 +133,8 @@ class ValueIteration:
             self.values_list_plot.append(np.mean(self.values))
 
             if np.allclose(self.old_values, self.values, rtol=0, atol=1e-20):
-                plt.plot(self.values_list_plot)
-                plt.show()
+                # plt.plot(self.values_list_plot)
+                # plt.show()
                 break
             else:
                 self.old_values = self.values.copy()
@@ -131,25 +152,45 @@ class ValueIteration:
                 v_list[a] = r1 + self.gamma * np.sum(p * values[s1])
             actions[s] = np.argmax(v_list)
 
+        plt.plot(self.values_list_plot)
+        plt.show()
+
         return actions.astype(int)
 
     def play(self):
         values = self.learn_values()
         actions = self.get_actions(values)
         s = self.env.reset()
+        log = {
+            't': [0],
+            's': [s],
+            'a': [],
+            'r': [],
+        }
         done = False
         step = 0
         while not done:
             self.env.render()
             a = actions[s]
             (s, r, done) = self.env.step(a)
+            log['t'].append(log['t'][-1] + 1)
+            log['s'].append(s)
+            log['a'].append(a)
+            log['r'].append(r)
             if done:
                 s = self.env.reset()
             else:
                 step += 1
 
+        plt.plot(log['t'], log['s'])
+        plt.plot(log['t'][:-1], log['a'])
+        plt.plot(log['t'][:-1], log['r'])
+        plt.legend(['s', 'a', 'r'])
+        plt.title('trajectory example')
+        plt.show()
+
     def plot(self):
-        self.learn_values()
+        self.play()
 
 
 class SARSA:
@@ -204,16 +245,33 @@ class SARSA:
 
     def play(self):
         s = self.env.reset()
+        log = {
+            't': [0],
+            's': [s],
+            'a': [],
+            'r': [],
+        }
         done = False
         step = 0
         while not done:
-            self.env.render()
+            # self.env.render()
             a = np.argmax(self.Q[s])
             (s, r, done) = self.env.step(a)
+            log['t'].append(log['t'][-1] + 1)
+            log['s'].append(s)
+            log['a'].append(a)
+            log['r'].append(r)
             if done:
                 s = self.env.reset()
             else:
                 step += 1
+
+        plt.plot(log['t'], log['s'])
+        plt.plot(log['t'][:-1], log['a'])
+        plt.plot(log['t'][:-1], log['r'])
+        plt.legend(['s', 'a', 'r'])
+        plt.title('trajectory example')
+        plt.show()
 
     def plot(self):
         list1 = self.learn(epsilon_threshold=0.1, alpha=1e-5)
@@ -248,6 +306,10 @@ class SARSA:
         plt.ylabel('sum of rewards')
         plt.title('return vs episodes for varying alpha')
         plt.show()
+
+        self.reset_tables()
+        _ = self.learn(epsilon_threshold=0.1, alpha=1e-5)
+        self.play()
 
     def get_policy(self):
         policy = np.zeros(self.env.num_states)
@@ -310,16 +372,33 @@ class QLearning:
 
     def play(self):
         s = self.env.reset()
+        log = {
+            't': [0],
+            's': [s],
+            'a': [],
+            'r': [],
+        }
         done = False
         step = 0
         while not done:
-            self.env.render()
+            # self.env.render()
             a = np.argmax(self.Q[s])
             (s, r, done) = self.env.step(a)
+            log['t'].append(log['t'][-1] + 1)
+            log['s'].append(s)
+            log['a'].append(a)
+            log['r'].append(r)
             if done:
                 s = self.env.reset()
             else:
                 step += 1
+
+        plt.plot(log['t'], log['s'])
+        plt.plot(log['t'][:-1], log['a'])
+        plt.plot(log['t'][:-1], log['r'])
+        plt.legend(['s', 'a', 'r'])
+        plt.title('trajectory example')
+        plt.show()
 
     def plot(self):
         list1 = self.learn(epsilon_threshold=0.1, alpha=1e-5)
@@ -354,6 +433,11 @@ class QLearning:
         plt.ylabel('sum of rewards')
         plt.title('return vs episodes for varying alpha')
         plt.show()
+
+        self.reset_q_table()
+
+        _ = self.learn(epsilon_threshold=0.1, alpha=1e-5)
+        self.play()
 
     def get_policy(self):
         policy = np.zeros(self.env.num_states)
@@ -422,7 +506,7 @@ if __name__ == '__main__':
         submode = 0 activates SARSA
         submode = 1 activates Q-Learning
     """
-    mode = 4
+    mode = 2
     submode = 1
     if mode == 0:
         policy = ValueIteration(envs, gamma)

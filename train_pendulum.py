@@ -48,7 +48,7 @@ class SARSA:
 
         return self.rew_plot_list
 
-    def learn(self, epsilon_threshold, alpha, total_timesteps=int(1e2)):
+    def learn(self, epsilon_threshold, alpha, total_timesteps=int(1e3)):
         plot_list = []
         for episode in range(total_timesteps):
             list1 = self.rollout(epsilon_threshold=epsilon_threshold, alpha=alpha)
@@ -59,27 +59,42 @@ class SARSA:
 
     def play(self):
         s = self.env.reset()
+        log = {
+            't': [0],
+            's': [s],
+            'a': [],
+            'r': [],
+        }
         done = False
         step = 0
         while not done:
-            self.env.render()
+            # self.env.render()
             a = np.argmax(self.Q[s])
             (s, r, done) = self.env.step(a)
+            log['t'].append(log['t'][-1] + 1)
+            log['s'].append(s)
+            log['a'].append(a)
+            log['r'].append(r)
             if done:
                 s = self.env.reset()
             else:
                 step += 1
 
+        plt.plot(log['t'], log['s'])
+        plt.plot(log['t'][:-1], log['a'])
+        plt.plot(log['t'][:-1], log['r'])
+        plt.legend(['s', 'a', 'r'])
+        plt.title('trajectory example')
+        plt.show()
+
     def plot(self):
         list1 = self.learn(epsilon_threshold=0.1, alpha=1e-5)
         plt.plot(list1)
         self.reset_tables()
-        print(f'learned 1')
 
         list2 = self.learn(epsilon_threshold=0.5, alpha=1e-5)
         plt.plot(list2)
         self.reset_tables()
-        print(f'learned 2')
 
         list3 = self.learn(epsilon_threshold=0.01, alpha=1e-5)
         plt.plot(list3)
@@ -93,12 +108,10 @@ class SARSA:
         list4 = self.learn(epsilon_threshold=0.1, alpha=1e-5)
         plt.plot(list4)
         self.reset_tables()
-        print(f'learned 4')
 
         list5 = self.learn(epsilon_threshold=0.1, alpha=1e-2)
         plt.plot(list5)
         self.reset_tables()
-        print(f'learned 5')
 
         list6 = self.learn(epsilon_threshold=0.1, alpha=1e-7)
         plt.plot(list6)
@@ -107,6 +120,10 @@ class SARSA:
         plt.ylabel('sum of rewards')
         plt.title('return vs episodes for varying alpha')
         plt.show()
+
+        self.reset_tables()
+        _ = self.learn(epsilon_threshold=0.1, alpha=1e-5)
+        self.play()
 
     def get_policy(self):
         policy = np.zeros(self.env.num_states)
@@ -169,27 +186,42 @@ class QLearning:
 
     def play(self):
         s = self.env.reset()
+        log = {
+            't': [0],
+            's': [s],
+            'a': [],
+            'r': [],
+        }
         done = False
         step = 0
         while not done:
-            self.env.render()
+            # self.env.render()
             a = np.argmax(self.Q[s])
             (s, r, done) = self.env.step(a)
+            log['t'].append(log['t'][-1] + 1)
+            log['s'].append(s)
+            log['a'].append(a)
+            log['r'].append(r)
             if done:
                 s = self.env.reset()
             else:
                 step += 1
 
+        plt.plot(log['t'], log['s'])
+        plt.plot(log['t'][:-1], log['a'])
+        plt.plot(log['t'][:-1], log['r'])
+        plt.legend(['s', 'a', 'r'])
+        plt.title('trajectory example')
+        plt.show()
+
     def plot(self):
         list1 = self.learn(epsilon_threshold=0.1, alpha=1e-5)
         plt.plot(list1)
         self.reset_q_table()
-        print(f'learned 1')
 
         list2 = self.learn(epsilon_threshold=0.5, alpha=1e-5)
         plt.plot(list2)
         self.reset_q_table()
-        print(f'learned 2')
 
         list3 = self.learn(epsilon_threshold=0.01, alpha=1e-5)
         plt.plot(list3)
@@ -203,12 +235,10 @@ class QLearning:
         list4 = self.learn(epsilon_threshold=0.1, alpha=1e-5)
         plt.plot(list4)
         self.reset_q_table()
-        print(f'learned 4')
 
         list5 = self.learn(epsilon_threshold=0.1, alpha=1e-2)
         plt.plot(list5)
         self.reset_q_table()
-        print(f'learned 5')
 
         list6 = self.learn(epsilon_threshold=0.1, alpha=1e-7)
         plt.plot(list6)
@@ -217,6 +247,11 @@ class QLearning:
         plt.ylabel('sum of rewards')
         plt.title('return vs episodes for varying alpha')
         plt.show()
+
+        self.reset_q_table()
+
+        _ = self.learn(epsilon_threshold=0.1, alpha=1e-5)
+        self.play()
 
     def get_policy(self):
         policy = np.zeros(self.env.num_states)
@@ -283,7 +318,7 @@ if __name__ == '__main__':
         submode = 0 activates SARSA
         submode = 1 activates Q-Learning
     """
-    mode = 2
+    mode = 1
     submode = 0
     if mode == 0:
         policy = SARSA(envs, gamma)
