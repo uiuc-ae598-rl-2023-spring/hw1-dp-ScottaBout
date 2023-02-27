@@ -48,7 +48,7 @@ class SARSA:
 
         return self.rew_plot_list
 
-    def learn(self, epsilon_threshold, alpha, total_timesteps=int(1e3)):
+    def learn(self, epsilon_threshold, alpha, total_timesteps=int(1e2)):
         plot_list = []
         for episode in range(total_timesteps):
             list1 = self.rollout(epsilon_threshold=epsilon_threshold, alpha=alpha)
@@ -318,7 +318,7 @@ if __name__ == '__main__':
         submode = 0 activates SARSA
         submode = 1 activates Q-Learning
     """
-    mode = 1
+    mode = 0
     submode = 0
     if mode == 0:
         policy = SARSA(envs, gamma)
