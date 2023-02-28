@@ -31,7 +31,7 @@ class SARSA:
             if epsilon > epsilon_threshold:
                 self.A[s] = np.argmax(self.Q[s])
             else:
-                self.A[s] = np.random.randint(0, 4)
+                self.A[s] = np.random.randint(0, self.env.num_actions)
         s = self.env.reset()
         for step in range(episode_length):
             a = int(self.A[s])
@@ -167,9 +167,9 @@ class QLearning:
             if epsilon > epsilon_threshold:
                 a = np.argmax(self.Q[s])
             else:
-                a = np.random.randint(0, 4)
+                a = np.random.randint(0, self.env.num_actions)
                 if a == np.argmax(self.Q[s]):
-                    a = np.random.randint(0, 4)
+                    a = np.random.randint(0, self.env.num_actions)
             a = int(a)
             (s1, rew, done) = self.env.step(a)
             rew_list.append(rew)
