@@ -64,6 +64,8 @@ class SARSA:
             's': [s],
             'a': [],
             'r': [],
+            'theta': [self.env.x[0]],  # agent does not have access to this, but helpful for display
+            'thetadot': [self.env.x[1]],  # agent does not have access to this, but helpful for display
         }
         done = False
         step = 0
@@ -75,15 +77,21 @@ class SARSA:
             log['s'].append(s)
             log['a'].append(a)
             log['r'].append(r)
+            log['theta'].append(self.env.x[0])
+            log['thetadot'].append(self.env.x[1])
             if done:
                 s = self.env.reset()
             else:
                 step += 1
 
-        plt.plot(log['t'], log['s'])
-        plt.plot(log['t'][:-1], log['a'])
-        plt.plot(log['t'][:-1], log['r'])
-        plt.legend(['s', 'a', 'r'])
+        fig, ax = plt.subplots(2, 1, figsize=(10, 10))
+        ax[0].plot(log['t'], log['s'])
+        ax[0].plot(log['t'][:-1], log['a'])
+        ax[0].plot(log['t'][:-1], log['r'])
+        ax[0].legend(['s', 'a', 'r'])
+        ax[1].plot(log['t'], log['theta'])
+        ax[1].plot(log['t'], log['thetadot'])
+        ax[1].legend(['theta', 'thetadot'])
         plt.title('trajectory example')
         plt.show()
 
@@ -191,6 +199,8 @@ class QLearning:
             's': [s],
             'a': [],
             'r': [],
+            'theta': [self.env.x[0]],  # agent does not have access to this, but helpful for display
+            'thetadot': [self.env.x[1]],  # agent does not have access to this, but helpful for display
         }
         done = False
         step = 0
@@ -202,15 +212,21 @@ class QLearning:
             log['s'].append(s)
             log['a'].append(a)
             log['r'].append(r)
+            log['theta'].append(self.env.x[0])
+            log['thetadot'].append(self.env.x[1])
             if done:
                 s = self.env.reset()
             else:
                 step += 1
 
-        plt.plot(log['t'], log['s'])
-        plt.plot(log['t'][:-1], log['a'])
-        plt.plot(log['t'][:-1], log['r'])
-        plt.legend(['s', 'a', 'r'])
+        fig, ax = plt.subplots(2, 1, figsize=(10, 10))
+        ax[0].plot(log['t'], log['s'])
+        ax[0].plot(log['t'][:-1], log['a'])
+        ax[0].plot(log['t'][:-1], log['r'])
+        ax[0].legend(['s', 'a', 'r'])
+        ax[1].plot(log['t'], log['theta'])
+        ax[1].plot(log['t'], log['thetadot'])
+        ax[1].legend(['theta', 'thetadot'])
         plt.title('trajectory example')
         plt.show()
 
