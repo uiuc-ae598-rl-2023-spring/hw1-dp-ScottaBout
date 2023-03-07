@@ -206,6 +206,7 @@ class QLearning:
         step = 0
         while not done:
             # self.env.render()
+            print(f'self.q = {self.Q}')
             a = np.argmax(self.Q[s])
             (s, r, done) = self.env.step(a)
             log['t'].append(log['t'][-1] + 1)
@@ -324,7 +325,7 @@ class TDzero:
         plt.show()
 
 
-if __name__ == '__main__':
+def main(mode=0, submode=0):
     envs = discrete_pendulum.Pendulum(n_theta=15, n_thetadot=21)
     gamma = 0.95
     """
@@ -334,8 +335,8 @@ if __name__ == '__main__':
         submode = 0 activates SARSA
         submode = 1 activates Q-Learning
     """
-    mode = 0
-    submode = 0
+    # mode = 1
+    # submode = 0
     if mode == 0:
         policy = SARSA(envs, gamma)
         policy.plot()
@@ -355,3 +356,7 @@ if __name__ == '__main__':
             qlearning = policy.get_policy()
             values = TDzero(envs, gamma, policy=qlearning)
             values.plot()
+
+
+if __name__ == '__main__':
+    main(mode=2)
