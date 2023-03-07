@@ -49,14 +49,16 @@ class SARSA:
 
         return self.rew_plot_list
 
-    def learn(self, epsilon_threshold, alpha, total_timesteps=int(10e3), anneal=False):
+    def learn(self, epsilon_threshold, alpha, total_timesteps=int(40e3), anneal=False):
         plot_list = []
-        anneal_list = [10., 9., 8., 7., 6., 5., 4., 3., 2., 1.]
+        anneal_list = [20., 19., 18., 17., 16., 15., 14., 13., 12., 11., 10., 9., 8., 7., 6., 5., 4., 3., 2., 1.]
         for episode in range(total_timesteps):
+            if (episode > 0) and (episode % 100 == 0):
+                print(f'{episode} / {total_timesteps}')
             if anneal:
                 if total_timesteps / (episode + 1) in anneal_list:
                     print(f'old epislon threshold = {epsilon_threshold}')
-                    epsilon_threshold -= 0.1
+                    epsilon_threshold -= 0.05
                     print(f'new epsilon threshold = {epsilon_threshold}')
             list1 = self.rollout(epsilon_threshold=epsilon_threshold, alpha=alpha)
             plot_list.append(sum(list1))
@@ -420,11 +422,11 @@ def main(mode=0, submode=0):
     # submode = 0
     if mode == 0:
         policy = SARSA(envs, gamma)
-        policy.plot(save_fig=False, graph=1)
+        policy.plot(save_fig=True, graph=2)
 
     elif mode == 1:
         policy = QLearning(envs, gamma)
-        policy.plot(save_fig=True, graph=2)
+        policy.plot(save_fig=False, graph=2)
 
     elif mode == 2:
         if submode == 0:
@@ -449,4 +451,4 @@ if __name__ == '__main__':
         submode = 0 activates SARSA
         submode = 1 activates Q-Learning
     """
-    main(mode=1, submode=0)
+    main(mode=0, submode=0)
