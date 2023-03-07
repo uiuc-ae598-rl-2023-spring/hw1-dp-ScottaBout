@@ -424,7 +424,7 @@ def main(mode=0, submode=0):
 
     elif mode == 1:
         policy = QLearning(envs, gamma)
-        policy.plot(save_fig=False, graph=2)
+        policy.plot(save_fig=True, graph=2)
 
     elif mode == 2:
         if submode == 0:
@@ -432,13 +432,13 @@ def main(mode=0, submode=0):
             _ = policy.learn(epsilon_threshold=0.9, alpha=0.3, anneal=True)
             sarsa, _ = policy.get_policy()
             values = TDzero(envs, gamma, policy=sarsa)
-            values.plot(save_fig=True)
+            values.plot(save_fig=False)
         elif submode == 1:
             policy = QLearning(envs, gamma)
             _ = policy.learn(epsilon_threshold=0.9, alpha=0.3, anneal=True)
             qlearning, _ = policy.get_policy()
             values = TDzero(envs, gamma, policy=qlearning)
-            values.plot(save_fig=True)
+            values.plot(save_fig=False)
 
 
 if __name__ == '__main__':
@@ -449,4 +449,4 @@ if __name__ == '__main__':
         submode = 0 activates SARSA
         submode = 1 activates Q-Learning
     """
-    main(mode=2, submode=0)
+    main(mode=1, submode=0)
